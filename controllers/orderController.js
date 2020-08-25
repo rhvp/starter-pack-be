@@ -3,31 +3,15 @@ const Transaction = require('../models/transaction');
 const AppError = require('../config/appError');
 const _ = require('underscore');
 const jwt = require('jsonwebtoken');
-const axios = require('axios').default;
-const crypto = require('crypto');
+const paystack = require('../config/paystack')
 
-const verifyTransaction = async(ref, next) => {
-    try {
-        const response = await axios.request({
-            method: 'GET',
-            url: 'https://api.paystack.co/transaction/verify/' + ref,
-            headers: {
-                'Authorization': `Bearer ${process.env.PAYSTACK_SECRET}`
-            }
-        })
-        return response;
-    } catch (error) {
-        console.log('error', error.response.status);
-        return next(new AppError(error.response.data.message, error.response.status));
-    }
-}
 
 
 exports.create = async(req, res, next) => {
     try {
         let id = req.query.user;
         let {paystack_ref, amount, customer_email, products} = req.body;
-        const payment = await verifyTransaction(paystack_ref, next);
+        const payment = await paystack.verifyTransaction(paystack_ref);
         let txData = {
             paystack_ref,
             amount,

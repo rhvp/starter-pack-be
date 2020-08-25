@@ -3,6 +3,8 @@ const express = require('express');
 const auth = require('../controllers/authController');
 const router = express.Router();
 
+router.get('/available/:id', product.findAvailable)
+
 router.route('/:id')
     .get(product.findAll)
     .patch(auth.userAuth, product.edit)
