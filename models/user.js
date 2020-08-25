@@ -28,6 +28,12 @@ const userSchema = new mongoose.Schema({
         unique: true,
         required: [true, 'Please enter your phone number']
     },
+    bank: {
+        type: String
+    },
+    nuban: {
+        type: String
+    },
     address: {
         type: String,
         unique: true,

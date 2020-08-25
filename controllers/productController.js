@@ -11,7 +11,7 @@ exports.create = async(req, res, next) => {
         let data = _.pick(req.body, ['name', 'image', 'description', 'price', 'stock']);
         data.user = id;
         const product = await Product.create(data);
-        res.status(201).json({
+        return res.status(201).json({
             status: 'success',
             data: product
         })
@@ -24,9 +24,22 @@ exports.findAll = async(req, res, next) => {
     try {
         let user = req.params.id;
         const products = await Product.find({user: user});
-        res.status(200).json({
+        return res.status(200).json({
             status: 'success',
             count: products.length,
+            data: products
+        })
+    } catch (error) {
+        return next(error);
+    }
+}
+
+exports.findAvailable = async(req, res, next) => {
+    try {
+        let user = req.params.id;
+        const products = await Product.find({user: user, available: true});
+        return res.status(200).json({
+            status: 'success',
             data: products
         })
     } catch (error) {

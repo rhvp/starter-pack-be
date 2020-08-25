@@ -8,7 +8,7 @@ const _ = require('underscore');
 
 exports.signup = async(req, res, next) => {
     try {
-        let data = _.pick(req.body, ['firstname', 'lastname', 'email', 'phone', 'address', 'password']);
+        let data = _.pick(req.body, ['firstname', 'lastname', 'email', 'phone', 'address', 'password', 'bank', 'nuban', "business_name"]);
         const emailExists = await User.findOne({email: data.email});
         if(emailExists) return next(new AppError('This email is already registered', 409));
         let hashedPassword = bcrypt.hashSync(data.password);
