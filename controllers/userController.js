@@ -45,14 +45,13 @@ exports.verifyBankDetails = async(req, res, next) => {
         let auth = req.headers['authorization']
         const authorized = jwt.verify(auth, process.env.JWT_SECRET);
         const id = authorized.id;
-        let data = _.pick(req.body, ['bank_code', 'nuban', 'bank_name']);
+        let data = _.pick(req.body, ['bank_code', 'nuban']);
         const verify = await paystack.verifyBank(data.nuban, data.bank_code);
         if(!verify.status) return next(new AppError('Error verifying details', 500));
         res.status(200).json({
             status: 'success',
             data: verify.data
         })
-        await User.findByIdAndUpdate(id, {bank: data.bank_name});
     } catch (error) {
         return next(error);
     }
@@ -63,8 +62,8 @@ exports.saveBankDetails = async(req, res, next) => {
         let auth = req.headers['authorization']
         const authorized = jwt.verify(auth, process.env.JWT_SECRET);
         const id = authorized.id;
-        let data = _.pick(req.body, ['nuban']);
-        await User.findByIdAndUpdate(id, {nuban: data.nuban});
+        let data = _.pick(req.body, ['nuban', 'bank_name']);
+        await User.findByIdAndUpdate(id, {nuban: data.nuban, bank: data.bank_name});
         res.status(200).json({
             status: 'success',
             message: 'Bank details updated'
