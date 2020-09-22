@@ -1,6 +1,7 @@
 const User = require('../models/user');
 const Token = require('../models/token');
 const AppError = require('../config/appError');
+const Customer = require('../models/customer');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const _ = require('underscore');
@@ -42,9 +43,7 @@ exports.getBanks = async(req, res, next) => {
 
 exports.verifyBankDetails = async(req, res, next) => {
     try {
-        let auth = req.headers['authorization']
-        const authorized = jwt.verify(auth, process.env.JWT_SECRET);
-        const id = authorized.id;
+        const id = req.user.id;
         let data = _.pick(req.body, ['bank_code', 'nuban']);
         const verify = await paystack.verifyBank(data.nuban, data.bank_code);
         if(!verify.status) return next(new AppError('Error verifying details', 500));
@@ -59,9 +58,7 @@ exports.verifyBankDetails = async(req, res, next) => {
 
 exports.saveBankDetails = async(req, res, next) => {
     try {
-        let auth = req.headers['authorization']
-        const authorized = jwt.verify(auth, process.env.JWT_SECRET);
-        const id = authorized.id;
+        const id = req.user.id;
         let data = _.pick(req.body, ['nuban', 'bank_name']);
         await User.findByIdAndUpdate(id, {nuban: data.nuban, bank: data.bank_name});
         res.status(200).json({
@@ -100,6 +97,34 @@ exports.login = async(req, res, next) => {
             status: 'success',
             data: user,
             token: token
+        })
+    } catch (error) {
+        return next(error);
+    }
+}
+
+exports.getCustomers = async(req, res, next) => {
+    try {
+        let id = req.user.id;
+        const customers = await Customer.find({user: id});
+        res.status(200).json({
+            status: 'success',
+            data: customers
+        })
+    } catch (error) {
+        return next(error);
+    }
+}
+
+exports.setDelivery = async(req, res, next) => {
+    try {
+        let id = req.user.id;
+        let delivery = _.pick(req.body, ['zone_1', 'zone_2', 'zone_3', 'zone_4'])
+        const user = await User.findByIdAndUpdate(id, {delivery}, {new: true});
+        if(!user) return next(new AppError('User not found', 404));
+        res.status(200).json({
+            status: 'success',
+            data: user
         })
     } catch (error) {
         return next(error);

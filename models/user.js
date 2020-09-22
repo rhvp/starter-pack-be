@@ -20,7 +20,6 @@ const userSchema = new mongoose.Schema({
     },
     password: {
         type: String,
-        unique: true,
         required: [true, 'Please enter a password']
     },
     phone: {
@@ -43,6 +42,11 @@ const userSchema = new mongoose.Schema({
         type: String,
         enum: ['merchant', 'admin'],
         default: 'merchant'
+    },
+    delivery: {
+        zone_1: Number,
+        zone_2: Number,
+        zone_3: Number
     }
 }, {
     timestamps: true

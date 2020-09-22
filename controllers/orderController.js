@@ -3,25 +3,25 @@ const Transaction = require('../models/transaction');
 const AppError = require('../config/appError');
 const _ = require('underscore');
 const jwt = require('jsonwebtoken');
-const paystack = require('../config/paystack')
+const paystack = require('../config/paystack');
 
 
 
 exports.create = async(req, res, next) => {
     try {
-        let id = req.query.user;
-        let {paystack_ref, amount, customer_email, products} = req.body;
-        const payment = await paystack.verifyTransaction(paystack_ref);
-        let txData = {
-            paystack_ref,
-            amount,
-            customer_email,
-            user: id
-        }
+        let id = req.user.id;
+        let {amount, customer_email, products} = req.body;
+        // const payment = await paystack.verifyTransaction(paystack_ref);
+        // let txData = {
+        //     paystack_ref,
+        //     amount,
+        //     customer_email,
+        //     user: id
+        // }
         if(payment.data.data.status) {
             console.log('Payment Success');
-            txData.status = 'success';
-            const transaction = await Transaction.create(txData);
+            // txData.status = 'success';
+            // const transaction = await Transaction.create(txData);
             res.status(200).json({
                 status: 'success',
                 message: 'Payment Successfully Verified. Processing Order...',
@@ -49,9 +49,7 @@ exports.create = async(req, res, next) => {
 
 exports.getAllMyOrders = async(req, res, next) => {
     try {
-        let auth = req.headers['authorization'];
-        let authorized = jwt.verify(auth, process.env.JWT_SECRET);
-        const id = authorized.id;
+        const id = req.user.id;
         const orders = await Order.find({user: id});
         res.status(200).json({
             status: 'success',
@@ -65,9 +63,7 @@ exports.getAllMyOrders = async(req, res, next) => {
 
 exports.fetchMyOrder = async(req, res, next) => {
     try {
-        let auth = req.headers['authorization'];
-        let authorized = jwt.verify(auth, process.env.JWT_SECRET);
-        const id = authorized.id;
+        const id = req.user.id;
         const order = await Order.findOne({_id: req.params.id, user: id});
         if(!order) return next(new AppError('Order not found', 404));
         res.status(200).json({

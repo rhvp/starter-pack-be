@@ -3,6 +3,7 @@ const AppError = require('./config/appError');
 const errorHandler = require('./controllers/errorController');
 const userRoutes = require('./routes/userRoutes');
 const productRoutes = require('./routes/productRoutes');
+const orderRoutes = require('./routes/orderRoutes');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const mongoSanitize = require('express-mongo-sanitize');
@@ -33,6 +34,7 @@ app.get('/', (req, res, next)=>{
 })
 app.use('/api/v1/user', userRoutes);
 app.use('/api/v1/product', productRoutes);
+app.use('/api/v1/order', orderRoutes);
 
 
 app.use((req, res, next)=>{
