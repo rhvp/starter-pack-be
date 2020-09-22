@@ -13,10 +13,9 @@ cloudinary.config({
 exports.create = async(req, res, next) => {
     try {
         const id = req.user.id;
-        let data = _.pick(req.body, ['name','description', 'price', 'stock']);
+        let data = _.pick(req.body, ['name','description', 'price', 'available','published','category']);
         let {image} = req.body;
         data.user = id;
-        if(data.stock > 0) data.available = true;
         const product = await Product.create(data);
         // add image upload to cloudinary
         res.status(201).json({
@@ -79,7 +78,7 @@ exports.fetch = async(req, res, next) => {
 exports.edit = async(req, res, next) => {
     try {
         const id = req.user.id;
-        let update = _.pick(req.body, ['name', 'description', 'price', 'stock', 'available']);
+        let update = _.pick(req.body, ['name', 'description', 'price', 'available', 'published','category']);
         let {image} = req.body;
         let product_id = req.params.id;
         const product = await Product.findById(product_id);

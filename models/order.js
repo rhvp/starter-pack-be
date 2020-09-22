@@ -11,24 +11,23 @@ const orderSchema = new mongoose.Schema({
         ref: 'customer',
         required: true
     },
-    products: [
-        {
+    products: [{
+        product: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'product'
-        }
-    ],
+        },
+
+        quanitiy: Number
+    }],
     amount: {
         type: Number,
         required: true
     },
-    transaction: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'transaction',
-        required: true
-    },
-    paystack_ref: {
+    
+    status: {
         type: String,
-        required: true
+        enum: ['processing', 'completed'],
+        default: 'processing'
     }
 },
 {

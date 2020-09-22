@@ -1,5 +1,6 @@
 const Order = require('../models/order');
 const Transaction = require('../models/transaction');
+const Customer = require('../models/customer');
 const AppError = require('../config/appError');
 const _ = require('underscore');
 const jwt = require('jsonwebtoken');
@@ -9,39 +10,25 @@ const paystack = require('../config/paystack');
 
 exports.create = async(req, res, next) => {
     try {
-        let id = req.user.id;
-        let {amount, customer_email, products} = req.body;
-        // const payment = await paystack.verifyTransaction(paystack_ref);
-        // let txData = {
-        //     paystack_ref,
-        //     amount,
-        //     customer_email,
-        //     user: id
-        // }
-        if(payment.data.data.status) {
-            console.log('Payment Success');
-            // txData.status = 'success';
-            // const transaction = await Transaction.create(txData);
-            res.status(200).json({
-                status: 'success',
-                message: 'Payment Successfully Verified. Processing Order...',
-                data: transaction
-            })
-            let orderData = {
-                products,
-                transaction,
-                user: id,
-                paystack_ref,
-                amount,
-                customer_email
-            }
-            await Order.create(orderData);
-        } else {
-            console.log('Payment failed');
-            txData.status = 'failed';
-            await Transaction.create(txData);
-            return next(new AppError('Payment failed. Order not created', 406));
+        let id = req.query.user;
+        let {amount, products} = req.body;
+        let customerData = _.pick(req.body, ['name', 'email', 'address', 'phone']);
+        customerData.user = id;
+        const customer = await Customer.create(customerData);
+        
+        
+        let orderData = {
+            products,
+            user: id,
+            amount,
+            customer: customer._id
         }
+        const order = await Order.create(orderData);
+        res.status(200).json({
+            status: 'success',
+            message: 'Order recieved successfully',
+            data: order
+        })
     } catch (error) {
         return next(error);
     }
@@ -92,6 +79,24 @@ exports.fetchOrder = async(req, res, next) => {
     try {
         const order = await Order.findById(req.params.id);
         if(!order) return next(new AppError('Order not found', 404));
+        res.status(200).json({
+            status: 'success',
+            data: order
+        })
+    } catch (error) {
+        return next(error);
+    }
+}
+
+exports.updateOrder = async(req, res, next) => {
+    try {
+        const id = req.user.id;
+        let orderId = req.params.id;
+        let {status} = req.body;
+        const orderExists = await Order.findById(orderId);
+        if(!orderExists) if(!order) return next(new AppError('Order not found', 404));
+        if(orderExists._id != id) return next(new AppError('You\'re unauthorized to modify this resource', 401))
+        const order = await Order.findByIdAndUpdate(orderId, {status}, {new: true});
         res.status(200).json({
             status: 'success',
             data: order

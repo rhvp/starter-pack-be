@@ -6,6 +6,11 @@ const productSchema = new mongoose.Schema({
         ref: 'user',
         required: true
     },
+    category: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'category',
+        required: true
+    },
     name: {
         type: String,
         required: true
@@ -25,9 +30,7 @@ const productSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
-    stock: {
-        type: Number
-    }
+    published: Boolean
 }, {
     timestamps: true
 })
