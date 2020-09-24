@@ -11,5 +11,8 @@ router.post('/verify-account', auth.userAuth, user.verifyBankDetails)
 router.patch('/confirm-account', auth.userAuth, user.saveBankDetails)
 router.get('/customers', auth.userAuth, user.getCustomers)
 router.patch('/set-delivery', auth.userAuth, user.setDelivery)
+router.post('/change-password', auth.userAuth, user.changePassword)
+router.get('forgot-password/:email', user.forgotPasswordRequest)
+router.post('reset-password/:token', user.resetPassword)
 
 module.exports = router;

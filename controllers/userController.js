@@ -6,11 +6,13 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const _ = require('underscore');
 const paystack = require('../config/paystack');
+const crypto = require('crypto');
+const sendEmail = require('../config/nodemailer');
 
 
 exports.signup = async(req, res, next) => {
     try {
-        let data = _.pick(req.body, ['firstname', 'lastname', 'email', 'phone', 'address', 'password', 'business_name']);
+        let data = _.pick(req.body, ['firstname', 'lastname', 'email', 'phone', 'address', 'password', 'business_name', 'city']);
         const emailExists = await User.findOne({email: data.email});
         if(emailExists) return next(new AppError('This email is already registered', 409));
         let hashedPassword = bcrypt.hashSync(data.password);
@@ -103,10 +105,89 @@ exports.login = async(req, res, next) => {
     }
 }
 
+exports.changePassword = async(req, res, next)=>{
+    try {
+        let {newPass, oldPass, confirm} = req.body;
+        if(newPass !== confirm){
+            return next(new AppError('New password and Confirm password do not match', 406));
+        }
+        
+        const id = req.user.id;
+        const profile = await User.findById(id);
+        if(!profile) next(new AppError('User not found', 404));
+        const passwordCorrect = bcrypt.compareSync(oldPass, profile.password);
+        if(passwordCorrect){
+            const cryptPass = bcrypt.hashSync(newPass, 12);
+            profile.password = cryptPass
+            await profile.save();
+            res.status(200).json({
+                status: 'success',
+                message: 'Password updated'
+            })
+        } else {
+            return next(new AppError('Incorrect Old Password', 401));
+        }
+    } catch (error) {
+        return next(error);
+    }
+},
+
+exports.forgotPasswordRequest = async(req, res, next) => {
+    try {
+        const user = await User.findOne({email: req.params.email});
+        if(!user) return next(new AppError('Email not found',404));
+        const str = crypto.randomBytes(16).toString("hex");
+        let token = await Token.create({user: user._id, token: str, passwordReset: true});
+        const url = `https://starterPak.com/password-reset?token=${token.token}`;
+
+        const mailOptions = {
+            email: user.email,
+            from: 'StarterPak <hello@9id.com.ng>',
+            subject: 'Password Reset',
+            message: `<p>Hello ${user.firstname},</p>
+            <p>Follow this link to reset your account's password:</p>
+            <p><a href="${url}">Reset</a></p>
+            `
+        }
+        sendEmail(mailOptions).then(()=>{
+        res.status(200).json({
+            status: 'success',
+            message: 'Password reset mail sent',
+        })
+        }).catch(err=>{
+            console.error(err, 'Password reset email not sent');
+            return next(new AppError('error sending password reset', 500));
+        });
+          
+    } catch (error) {
+        return next(error)
+    }
+},
+
+exports.resetPassword = async(req, res, next)=>{
+    try {
+        let data = _.pick(req.body, ['password', 'confirm_password']);
+        if(data.password !== data.confirm_password) return next(new AppError('New password and Confirm password do not match', 406));
+        const token = await Token.findOne({token: req.params.token});
+        if(!token || !token.passwordReset) return next(new AppError('Invalid access token.', 401));
+        const id = token.user;
+        const hashed_password = bcrypt.hashSync(data.password, 12);
+        await User.findByIdAndUpdate(id, {password: hashed_password, confirmed: true});
+
+        res.status(200).json({
+            status: 'success',
+            message: 'Password successfully updated'
+        })
+
+    } catch (error) {
+        return next(error);
+    }
+},
+
 exports.getCustomers = async(req, res, next) => {
     try {
         let id = req.user.id;
-        const customers = await Customer.find({user: id});
+        const customers = await Customer.find({user: id}).lean();
         res.status(200).json({
             status: 'success',
             data: customers
@@ -119,7 +200,7 @@ exports.getCustomers = async(req, res, next) => {
 exports.setDelivery = async(req, res, next) => {
     try {
         let id = req.user.id;
-        let delivery = _.pick(req.body, ['zone_1', 'zone_2', 'zone_3', 'zone_4'])
+        let delivery = _.pick(req.body, ['zone_1', 'zone_2', 'zone_3'])
         const user = await User.findByIdAndUpdate(id, {delivery}, {new: true});
         if(!user) return next(new AppError('User not found', 404));
         res.status(200).json({
