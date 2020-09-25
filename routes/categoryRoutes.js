@@ -7,4 +7,9 @@ router.route('/')
     .post(auth.userAuth, category.create)
     .get(category.findAll)
 
+router.route('/')
+    .delete(category.delete)
+    .patch(category.edit)
+
+
 module.exports = router;
