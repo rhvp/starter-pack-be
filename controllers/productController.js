@@ -35,10 +35,24 @@ exports.create = async(req, res, next) => {
 exports.findAll = async(req, res, next) => {
     try {
         let user = req.query.user;
-        const products = await Product.find({user: user});
+        const products = await Product.find({user: user}).populate('category');
         return res.status(200).json({
             status: 'success',
             count: products.length,
+            data: products
+        })
+    } catch (error) {
+        return next(error);
+    }
+}
+
+exports.findByCategory = async(req, res, next) => {
+    try {
+        let user = req.query.user
+        let category = req.query.category
+        const products = await Product.find({user, category});
+        res.status(200).json({
+            status: 'success',
             data: products
         })
     } catch (error) {
@@ -62,8 +76,7 @@ exports.findAvailable = async(req, res, next) => {
 exports.fetch = async(req, res, next) => {
     try {
         let user = req.query.user;
-        let product_id = req.params.id;
-        const product = await Product.findOne({user: user, _id: product_id});
+        const product = await Product.findOne({_id: req.query.id, user});
         if(!product) return next(new AppError('Product not found', 404));
         res.status(200).json({
             status: 'success',

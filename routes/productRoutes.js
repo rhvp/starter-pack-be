@@ -5,8 +5,11 @@ const router = express.Router();
 
 router.get('/available', product.findAvailable)
 
+router.get('/fetch', product.fetch)
+
+router.get('/get-by-category', product.findByCategory)
+
 router.route('/:id')
-    .get(product.fetch)
     .patch(auth.userAuth, product.edit)
     .delete(auth.userAuth, product.delete)
 
