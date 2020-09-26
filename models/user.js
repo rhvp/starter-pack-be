@@ -38,14 +38,12 @@ const userSchema = new mongoose.Schema({
         unique: true,
         required: [true, 'Please enter your address']
     },
-    // city: {
-    //     type: String,
-    //     required: true
-    // },
-    // state: {
-    //     type: String,
-    //     required: true
-    // },
+    city: {
+        type: String
+    },
+    state: {
+        type: String
+    },
     role: {
         type: String,
         enum: ['merchant', 'admin'],
