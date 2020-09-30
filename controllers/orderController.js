@@ -1,4 +1,5 @@
 const Order = require('../models/order');
+const User = require('../models/user');
 const Transaction = require('../models/transaction');
 const Customer = require('../models/customer');
 const AppError = require('../config/appError');
@@ -28,6 +29,25 @@ exports.create = async(req, res, next) => {
             status: 'success',
             message: 'Order recieved successfully',
             data: order
+        })
+    } catch (error) {
+        return next(error);
+    }
+}
+
+exports.getDeliveryAmount = async(req, res, next) => {
+    try {
+        let delivery;
+        const id = req.query.user;
+        let {state, city} = req.body;
+        const user = await User.findById(id);
+        if(!user) return next(new AppError('User not found', 404));
+        if(state == user.state && city == user.city) delivery = user.delivery.zone_1;
+        else if(state == user.state) delivery = user.delivery.zone_2;
+        else delivery = user.delivery.zone_3;
+        res.status(200).json({
+            status: 'success',
+            fee: delivery
         })
     } catch (error) {
         return next(error);

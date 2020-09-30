@@ -13,6 +13,9 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Please enter your business name']
     },
+
+    logo: String,
+    
     email: {
         type: String,
         unique: true,

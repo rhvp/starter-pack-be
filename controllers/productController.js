@@ -2,13 +2,13 @@ const Product = require('../models/product');
 const AppError = require('../config/appError');
 const jwt = require('jsonwebtoken');
 const _ = require('underscore');
-const cloudinary = require('cloudinary').v2;
+const uploader = require('../config/cloudinary');
 
-cloudinary.config({
-    cloud_name: 'intelligent-innovations',
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET
-});
+// cloudinary.config({
+//     cloud_name: 'intelligent-innovations',
+//     api_key: process.env.CLOUDINARY_API_KEY,
+//     api_secret: process.env.CLOUDINARY_API_SECRET
+// });
 
 exports.create = async(req, res, next) => {
     try {
@@ -22,11 +22,7 @@ exports.create = async(req, res, next) => {
             status: 'success',
             data: product
         })
-        cloudinary.uploader.upload(image, async(error, result)=>{
-            if(error) console.log('Error uploading image', error);
-            else console.log(result.secure_url);
-            await Product.updateOne({_id: product._id}, {image: result.secure_url});
-        })
+        await uploader.uploadImage(image, product._id);
     } catch (error) {
         return next(error);
     }

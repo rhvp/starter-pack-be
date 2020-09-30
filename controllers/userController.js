@@ -8,11 +8,12 @@ const _ = require('underscore');
 const paystack = require('../config/paystack');
 const crypto = require('crypto');
 const sendEmail = require('../config/nodemailer');
+const uploader = require('../config/cloudinary');
 
 
 exports.signup = async(req, res, next) => {
     try {
-        let data = _.pick(req.body, ['firstname', 'lastname', 'email', 'phone', 'address', 'password', 'business_name', 'city']);
+        let data = _.pick(req.body, ['firstname', 'lastname', 'email', 'phone', 'address', 'password', 'business_name', 'city', 'state']);
         const emailExists = await User.findOne({email: data.email});
         if(emailExists) return next(new AppError('This email is already registered', 409));
         let hashedPassword = bcrypt.hashSync(data.password);
@@ -23,6 +24,20 @@ exports.signup = async(req, res, next) => {
             status: 'success',
             message: 'Signup successful',
             data: user
+        })
+    } catch (error) {
+        return next(error);
+    }
+}
+
+exports.updateLogo = async(req, res, next) => {
+    try {
+        const id = req.user.id;
+        let {image} = req.body;
+        await uploader.uploadMerchantLogo(image, id);
+        res.status(200).json({
+            status: 'success',
+            message: 'Logo update successfully'
         })
     } catch (error) {
         return next(error);
