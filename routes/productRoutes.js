@@ -7,7 +7,7 @@ router.get('/available', product.findAvailable)
 
 router.get('/fetch', product.fetch)
 
-router.get('/get-by-category', product.findByCategory)
+router.get('/get-by-category', auth.userCheck, product.findByCategory)
 
 router.route('/:id')
     .patch(auth.userAuth, product.edit)

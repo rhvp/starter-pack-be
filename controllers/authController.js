@@ -27,3 +27,15 @@ exports.adminAuth = async(req, res, next) => {
         return next(error);
     }
 }
+
+exports.userCheck = async(req, res, next) => {
+    try {
+        let auth = req.headers['authorization'];
+        if(!auth) return next();
+        const authorized = jwt.verify(auth, process.env.JWT_SECRET);
+        req.user = authorized;
+        next();
+    } catch (error) {
+        return next(error);
+    }
+}

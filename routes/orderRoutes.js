@@ -3,6 +3,8 @@ const auth = require('../controllers/authController');
 const router = express.Router();
 const order = require('../controllers/orderController');
 
+router.get('/my-orders',auth.userAuth, order.getAllMyOrders)
+router.get('/fetch-order/:id', auth.userAuth, order.fetchMyOrder)
 
 router.route('/')
     .get(auth.adminAuth, order.getOrders)
@@ -11,8 +13,6 @@ router.route('/:id')
     .patch(auth.userAuth, order.updateOrder)
     .get(auth.adminAuth, order.fetchOrder)
 
-router.get('/my-orders', auth.userAuth, order.getAllMyOrders)
-router.get('/my-orders/:id', auth.userAuth, order.fetchMyOrder)
 
 
 module.exports = router;

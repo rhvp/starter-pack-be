@@ -22,7 +22,7 @@ exports.create = async(req, res, next) => {
             status: 'success',
             data: product
         })
-        await uploader.uploadImage(image, product._id);
+        await uploader.uploadProductImage(image, product._id);
     } catch (error) {
         return next(error);
     }
@@ -30,13 +30,30 @@ exports.create = async(req, res, next) => {
 
 exports.findAll = async(req, res, next) => {
     try {
+        
+        const customLabels = {
+            docs: "products"
+        };
+        const options = {
+            page: req.query.page,
+            limit: req.query.perPage,
+            sort: { createdAt: -1 },
+            customLabels,
+            collation: {
+              locale: "en"
+            },
+            populate: 'category'
+        };
+        
         let user = req.query.user;
-        const products = await Product.find({user: user}).populate('category');
-        return res.status(200).json({
-            status: 'success',
-            count: products.length,
-            data: products
+        Product.paginate({user: user}, options, (err, products)=>{
+            res.status(200).json({
+                status: 'success',
+                data: {...products}
+            })
         })
+        
+        
     } catch (error) {
         return next(error);
     }
@@ -44,13 +61,30 @@ exports.findAll = async(req, res, next) => {
 
 exports.findByCategory = async(req, res, next) => {
     try {
-        let user = req.query.user
+        
         let category = req.query.category
-        const products = await Product.find({user, category});
-        res.status(200).json({
-            status: 'success',
-            data: products
+        const customLabels = {
+            docs: "products"
+        };
+        const options = {
+            page: req.query.page,
+            limit: req.query.perPage,
+            sort: { createdAt: -1 },
+            customLabels,
+            collation: {
+              locale: "en"
+            },
+            populate: 'category'
+        };
+        
+        let user = req.query.user
+        Product.paginate({user, category}, options, (err, products)=>{
+            res.status(200).json({
+                status: 'success',
+                data: {...products}
+            })
         })
+        
     } catch (error) {
         return next(error);
     }
@@ -59,10 +93,24 @@ exports.findByCategory = async(req, res, next) => {
 exports.findAvailable = async(req, res, next) => {
     try {
         let user = req.query.user;
-        const products = await Product.find({user: user, available: true});
-        return res.status(200).json({
-            status: 'success',
-            data: products
+        const customLabels = {
+            docs: "products"
+        };
+        const options = {
+            page: req.query.page,
+            limit: req.query.perPage,
+            sort: { createdAt: -1 },
+            customLabels,
+            collation: {
+              locale: "en"
+            },
+            populate: 'category'
+        };
+        Product.paginate({user, available: true}, options, (err, products)=>{
+            res.status(200).json({
+                status: 'success',
+                data: {...products}
+            })
         })
     } catch (error) {
         return next(error);
