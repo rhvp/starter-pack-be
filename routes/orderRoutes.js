@@ -8,7 +8,7 @@ router.get('/fetch-order/:id', auth.userAuth, order.fetchMyOrder)
 
 router.route('/')
     .get(auth.adminAuth, order.getOrders)
-    .post(auth.userAuth, order.create)
+    .post(order.create)
 router.route('/:id')
     .patch(auth.userAuth, order.updateOrder)
     .get(auth.adminAuth, order.fetchOrder)
