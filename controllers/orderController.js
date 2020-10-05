@@ -12,6 +12,8 @@ exports.create = async(req, res, next) => {
     try {
         let id = req.query.user;
         let {amount, products} = req.body;
+        const user = await User.findById(id);
+        if(!user) return next(new AppError('User not found', 404));
         let customerData = _.pick(req.body, ['name', 'email', 'address', 'phone']);
         customerData.user = id;
         const customer = await Customer.create(customerData);
@@ -29,7 +31,8 @@ exports.create = async(req, res, next) => {
             message: 'Order recieved successfully',
             data: order
         })
-        let options = {
+        
+        let customerOptions = {
             email: customer.email,
             from: 'StarterPak <hello@9id.com.ng>',
             subject: 'Order Processing',
@@ -39,10 +42,30 @@ exports.create = async(req, res, next) => {
             <p>Total Amount: ${amount}</p>
             `
         }
-        sendEmail(options).then(()=>{
-            console.log('Invoice sent to '+ customer.email);
+        let options = {
+            email: user.email,
+            from: 'StarterPak <hello@9id.com.ng>',
+            subject: 'Order Recieved',
+            message: `<p>Hello ${user.firstname},</p>
+            <p>You've recieved an order.</p>
+            <p>Order details are;</p>
+            <p>Total Amount: ${amount}</p>
+            <p>Customer Name: ${customer.name}</p>
+            <p>Customer Phone Number: ${customer.phone}</p>
+            <p>Customer Address: ${customer.address}</p>
+            <p>Order Id: ${order._id}</p>
+            `
+        }
+        sendEmail(customerOptions).then(()=>{
+            console.log('Invoice sent to customer '+ customer.email);
             }).catch(err=>{
                 console.log('Error sending invoive '+ err);
+            });
+        
+        sendEmail(options).then(()=>{
+            console.log('Order update sent to user '+ user.email);
+            }).catch(err=>{
+                console.log('Error sending order update '+ err);
             });
     } catch (error) {
         return next(error);
