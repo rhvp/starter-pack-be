@@ -7,7 +7,7 @@ const bcrypt = require('bcryptjs');
 const _ = require('underscore');
 const paystack = require('../config/paystack');
 const crypto = require('crypto');
-const sendEmail = require('../config/nodemailer');
+const sendEmail = require('../config/email');
 const uploader = require('../config/cloudinary');
 
 

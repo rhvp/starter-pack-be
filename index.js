@@ -1,6 +1,5 @@
 require('dotenv').config();
 const app = require('./app');
-const { uploadProductImage } = require('./config/cloudinary');
 require('./config/mongoose');
 // const upload = require('./config/script');
 

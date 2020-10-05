@@ -1,11 +1,10 @@
 const Order = require('../models/order');
 const User = require('../models/user');
-const Transaction = require('../models/transaction');
 const Customer = require('../models/customer');
 const AppError = require('../config/appError');
 const _ = require('underscore');
 const jwt = require('jsonwebtoken');
-const paystack = require('../config/paystack');
+const sendEmail = require('../config/email');
 
 
 
@@ -30,6 +29,21 @@ exports.create = async(req, res, next) => {
             message: 'Order recieved successfully',
             data: order
         })
+        let options = {
+            email: customer.email,
+            from: 'StarterPak <hello@9id.com.ng>',
+            subject: 'Order Processing',
+            message: `<p>Hello ${customer.name},</p>
+            <p>Your order has been recieved and is currently being processed</p>
+            <p>Order details are;</p>
+            <p>Total Amount: ${amount}</p>
+            `
+        }
+        sendEmail(options).then(()=>{
+            console.log('Invoice sent to '+ customer.email);
+            }).catch(err=>{
+                console.log('Error sending invoive '+ err);
+            });
     } catch (error) {
         return next(error);
     }
