@@ -1,10 +1,13 @@
 require('dotenv').config();
 const app = require('./app');
+const { uploadProductImage } = require('./config/cloudinary');
 require('./config/mongoose');
+// const upload = require('./config/script');
+
+// upload.uploadState();
 
 
-
-// Error.stackTraceLimit = 1;
+Error.stackTraceLimit = 1;
 const port = process.env.PORT || 8000;
 
 process.on('uncaughtException', err => {

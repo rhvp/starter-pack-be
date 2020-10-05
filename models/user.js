@@ -42,10 +42,12 @@ const userSchema = new mongoose.Schema({
         required: [true, 'Please enter your address']
     },
     city: {
-        type: String
+        type: String,
+        required: true
     },
     state: {
-        type: String
+        type: String,
+        required: true
     },
     role: {
         type: String,
