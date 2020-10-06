@@ -7,7 +7,7 @@ require('./config/mongoose');
 
 
 Error.stackTraceLimit = 1;
-const port = process.env.PORT || 8000;
+const port = process.env.PORT || 2200;
 
 process.on('uncaughtException', err => {
     console.log('Uncaught Exception!! Shutting down process..', err.name, err.message, err.stack);
