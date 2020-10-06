@@ -34,10 +34,11 @@ const sendEmail = async options => {
       // text: options.text,
     },
     locals: {
-      referralCode: options.referralCode,
-      name: options.name,
+      products: options.products,
+      customer: options.customer,
       amount: options.amount,
-      customerName: options.customerName
+      user: options.user,
+      order: options.order
     }
   };
 

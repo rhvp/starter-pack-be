@@ -1,10 +1,12 @@
 const Order = require('../models/order');
 const User = require('../models/user');
 const Customer = require('../models/customer');
+const Product = require('../models/product');
 const AppError = require('../config/appError');
 const _ = require('underscore');
 const jwt = require('jsonwebtoken');
 const sendEmail = require('../config/email');
+const sendEmailTemplate = require('../config/templateEmail');
 
 
 
@@ -18,7 +20,12 @@ exports.create = async(req, res, next) => {
         customerData.user = id;
         const customer = await Customer.create(customerData);
         
-        
+        // const productObjs = products.map(async obj=>{
+        //     let prod_details = await Product.findById(obj.product);
+        //     prod_details.quantity = obj.quantity;
+        //     return prod_details;
+        // })
+        // console.log(productObjs);
         let orderData = {
             products,
             user: id,
@@ -36,11 +43,12 @@ exports.create = async(req, res, next) => {
             email: customer.email,
             from: 'StarterPak <hello@9id.com.ng>',
             subject: 'Order Processing',
-            message: `<p>Hello ${customer.name},</p>
-            <p>Your order has been recieved and is currently being processed</p>
-            <p>Order details are;</p>
-            <p>Total Amount: ${amount}</p>
-            `
+            template: "invoice",
+            products,
+            customer,
+            amount,
+            user,
+            order
         }
         let options = {
             email: user.email,
@@ -56,7 +64,7 @@ exports.create = async(req, res, next) => {
             <p>Order Id: ${order._id}</p>
             `
         }
-        sendEmail(customerOptions).then(()=>{
+        sendEmailTemplate(customerOptions).then(()=>{
             console.log('Invoice sent to customer '+ customer.email);
             }).catch(err=>{
                 console.log('Error sending invoive '+ err);
