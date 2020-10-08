@@ -1,9 +1,18 @@
-// const cities = require('../ng.json');
-
+const cities = require('../ng.json');
+const states = require('./locations').states;
 const gidiCities = ['Mainland', 'Island'];
 const City = require('../models/city');
+const State = require('../models/state');
 
 exports.uploadState = ()=>{
+    // states.map(async state=>{
+    //     try {
+    //         await State.create({name: state});
+    //         console.log(state, ' created');
+    //     } catch (error) {
+    //         console.log('error creating ', state, error);
+    //     }
+    // })
     // cities.map(async obj=>{
     //     try {
     //         let cityObj = {

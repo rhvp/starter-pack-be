@@ -149,11 +149,7 @@ exports.edit = async(req, res, next) => {
         })
         
         if(image) {
-            cloudinary.uploader.upload(image, async(error, result)=>{
-                if(error) console.log('Error uploading image', error);
-                else console.log(result.secure_url);
-                await Product.updateOne({_id: product._id}, {image: result.secure_url});
-            })
+            uploader.uploadProductImage(image, product._id);
         }
         
     } catch (error) {
