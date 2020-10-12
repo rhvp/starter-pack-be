@@ -64,17 +64,18 @@ exports.create = async(req, res, next) => {
             <p>Order Id: ${order._id}</p>
             `
         }
+        sendEmail(options).then(()=>{
+            console.log('Order update sent to user '+ user.email);
+            }).catch(err=>{
+                console.log('Error sending order update '+ err);
+            });
         sendEmailTemplate(customerOptions).then(()=>{
             console.log('Invoice sent to customer '+ customer.email);
             }).catch(err=>{
                 console.log('Error sending invoive '+ err);
             });
         
-        sendEmail(options).then(()=>{
-            console.log('Order update sent to user '+ user.email);
-            }).catch(err=>{
-                console.log('Error sending order update '+ err);
-            });
+        
     } catch (error) {
         return next(error);
     }
