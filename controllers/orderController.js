@@ -33,7 +33,7 @@ exports.create = async(req, res, next) => {
             customer: customer._id
         }
         const order = await Order.create(orderData);
-        res.status(200).json({
+        res.status(201).json({
             status: 'success',
             message: 'Order recieved successfully',
             data: order

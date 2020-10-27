@@ -21,16 +21,19 @@ const referralSchema = new mongoose.Schema(
       required: [true, "Please provide your phone number"],
       validate: [validator.isMobilePhone, "Please provide a valid phone number"]
     },
-    accountNumber: {
-      type: String,
-      required: [true, "Please provide your account number!"]
-    },
-    bank: {
-      type: String,
-      required: [true, "Please provide your bank name!"]
-    },
+    // accountNumber: {
+    //   type: String,
+    //   required: [true, "Please provide your account number!"]
+    // },
+    // bank: {
+    //   type: String,
+    //   required: [true, "Please provide your bank name!"]
+    // },
 
-    referralCode: String
+    referralCode: {
+      type: String,
+      required: true
+    }
   },
   { timestamps: true }
 );
