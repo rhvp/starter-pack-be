@@ -492,7 +492,7 @@
                         <h1>Hi <%= customer.name %>,</h1>
                         <p>
                           Thanks for your patronage. This is an invoice
-                          for your recent purchase on <%= order.createdAt %>.
+                          for your recent purchase.
                           <br /> Order details below;
                         </p>
                         <table
@@ -600,7 +600,7 @@
                           reach out to our
                           <a href="mailto:<%= user.email %>">support team</a> for help.
                         </p>
-                        <p>Cheers, <br />The StarterPak Team</p>
+                        <p>Cheers, <br />The <%= user.business_name %> Team</p>
                         <!-- Sub copy -->
                       </div>
                     </td>

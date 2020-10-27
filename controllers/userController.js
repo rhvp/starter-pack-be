@@ -30,6 +30,19 @@ exports.signup = async(req, res, next) => {
     }
 }
 
+exports.updateProfile = async(req, res, next) => {
+    try {
+        let data = _.pick(req.body, ['firstname', 'lastname', 'email', 'phone', 'address', 'business_name', 'city', 'state']);
+        const user = await User.findByIdAndUpdate(req.user.id, data, {new: true});
+        res.status(200).json({
+            status: "success",
+            data: user
+        })
+    } catch (error) {
+        return next(error);
+    }
+}
+
 exports.updateLogo = async(req, res, next) => {
     try {
         const id = req.user.id;

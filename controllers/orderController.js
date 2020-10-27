@@ -38,21 +38,22 @@ exports.create = async(req, res, next) => {
             message: 'Order recieved successfully',
             data: order
         })
-        
+        let date = new Date(order.createdAt);
         let customerOptions = {
             email: customer.email,
-            from: 'StarterPak <hello@9id.com.ng>',
+            from: `${user.business_name} <hello@9id.com.ng>`,
             subject: 'Order Processing',
             template: "invoice",
             products,
             customer,
             amount,
             user,
-            order
+            order,
+            date
         }
         let options = {
             email: user.email,
-            from: 'StarterPak <hello@9id.com.ng>',
+            from: `StarterPak <hello@9id.com.ng>`,
             subject: 'Order Recieved',
             message: `<p>Hello ${user.firstname},</p>
             <p>You've recieved an order.</p>
