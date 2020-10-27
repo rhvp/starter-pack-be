@@ -6,7 +6,7 @@ require('./config/mongoose');
 // upload.uploadState();
 
 
-Error.stackTraceLimit = 1;
+// Error.stackTraceLimit = 1;
 const port = process.env.PORT || 2200;
 
 process.on('uncaughtException', err => {
