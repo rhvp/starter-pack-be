@@ -6,6 +6,7 @@ const auth = require('../controllers/authController');
 router.post('/signup', user.signup)
 router.post('/login', user.login)
 
+router.patch('/profile', auth.userAuth, user.updateProfile)
 router.get('/list-banks', user.getBanks)
 router.post('/verify-account', auth.userAuth, user.verifyBankDetails)
 router.patch('/confirm-account', auth.userAuth, user.saveBankDetails)
