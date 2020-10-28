@@ -158,7 +158,7 @@ exports.changePassword = async(req, res, next)=>{
     } catch (error) {
         return next(error);
     }
-},
+}
 
 exports.forgotPasswordRequest = async(req, res, next) => {
     try {
@@ -190,7 +190,7 @@ exports.forgotPasswordRequest = async(req, res, next) => {
     } catch (error) {
         return next(error)
     }
-},
+}
 
 exports.resetPassword = async(req, res, next)=>{
     try {
@@ -210,7 +210,7 @@ exports.resetPassword = async(req, res, next)=>{
     } catch (error) {
         return next(error);
     }
-},
+}
 
 exports.getCustomers = async(req, res, next) => {
     try {
